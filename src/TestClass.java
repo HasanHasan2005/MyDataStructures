@@ -1,24 +1,29 @@
 package src;
 
+import src.Stacks.StackArray;
+import src.Stacks.StackLinkedList;
+
 public class TestClass {
     public static void main(String[] args) {
-        SinglyLinkedList<Integer> sll = new SinglyLinkedList<>();
+        StackLinkedList<Integer> ll = new StackLinkedList<>();
+        StackArray<Integer> arr = new StackArray<>(new Integer[10000000]);
+        ll.push(1);
+        arr.push(1);
 
-        sll.insertFirst(1);
-        System.out.println(sll);
-        sll.insertLast(3);
-        System.out.println(sll);
-        sll.insert(1, 2);
-        System.out.println(sll);
+        long llTime = 0;
+        long arrTime = 0;
 
-        System.out.println(sll);
-        System.out.println(sll.get(1));
-        System.out.println(sll.getFirst());
-        System.out.println(sll.getLast());
+        for (int i = 0; i < 2000000; i++) {
+            llTime -= System.nanoTime();
+            ll.peek();
+            llTime += System.nanoTime();
 
-        sll.removeLast();
-        sll.remove(1);
+            arrTime -= System.nanoTime();
+            arr.peek();
+            arrTime += System.nanoTime();
+        }
 
-        System.out.println(sll);
+        System.out.println(llTime);
+        System.out.println(arrTime);
     }
 }

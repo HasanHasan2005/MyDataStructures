@@ -1,4 +1,6 @@
-package src;
+package src.LinkedLists;
+
+import src.Interfaces.List;
 
 import java.util.Iterator;
 
@@ -16,11 +18,8 @@ public class SinglyLinkedList<E> implements List<E> {
 
     public boolean isEmpty() {return size == 0;}
 
-
     protected Node<E> getNode(int i) {
-        if (size == 0) throw new IllegalArgumentException("Can't access an empty list");
-
-        if (i < 0 || i >= size) throw new IllegalArgumentException("List index out of bounds");
+        checkForException(i, false, size);
 
         Node<E> curr = head;
         for (int j = 0; j < i; j++) {
@@ -37,46 +36,43 @@ public class SinglyLinkedList<E> implements List<E> {
 
     public E getLast() {return get(size - 1);}
 
+    public E set(int i, E newElem) {
+        return getNode(i).setElem(newElem);
+    }
 
-    protected Node<E> insertNode(int i, E elem) {
-        if (i < 0 || i > size) throw new IllegalArgumentException("List index out of bounds");
+    protected E insertNode(int i, E elem) {
+        checkForException(i, true, size);
 
         size++;
         if (i == 0) {
             head = new Node<>(elem, head);
-            return head.next;
+            return (size == 1) ? null : head.getNext().getElem();
         }
 
         Node<E> curr = head;
         for (int j = 0; j < i - 1; j++) {
             curr = curr.next;
         }
-        Node<E> newNode = new Node<>(elem, curr.getNext());
-        curr.next = newNode;
 
-        return newNode.next;
+        E old = (i == size - 1) ? null : curr.getNext().getElem();
+        curr.setNext(new Node<>(elem, curr.getNext()));
+        return old;
     }
 
-
     public E insert(int i, E elem) {
-        Node<E> oldNode = insertNode(i, elem);
-        return (oldNode == null) ? null : oldNode.getElem();
+        return insertNode(i, elem);
     }
 
     public E insertLast(E elem) {return insert(size, elem);}
 
     public E insertFirst(E elem) {return insert(0, elem);}
 
-
-
-    protected Node<E> removeNode(int i) {
-        if (size == 0) throw new IllegalArgumentException("Can't remove node from an empty list");
-
-        if (i < 0 || i >= size) throw new IllegalArgumentException("List index out of bounds");
+    protected E removeNode(int i) {
+        checkForException(i, false, size);
 
         size--;
         if (i == 0) {
-            Node<E> toRemove = head;
+            E toRemove = head.getElem();
             head = head.next;
             return toRemove;
         }
@@ -85,13 +81,14 @@ public class SinglyLinkedList<E> implements List<E> {
         for (int j = 0; j < i - 1; j++) {
             curr = curr.next;
         }
-        Node<E> oldNode = curr.next;
-        curr.next = oldNode.next;
-        return oldNode;
+
+        E old = curr.getNext().getElem();
+        curr.setNext(curr.getNext().getNext());
+        return old;
     }
 
     public E remove(int i) {
-        return removeNode(i).getElem();
+        return removeNode(i);
     }
 
     public E removeLast() {return remove(size - 1);}
@@ -124,8 +121,8 @@ public class SinglyLinkedList<E> implements List<E> {
     }
 
     protected static class Node<E> {
-        E elem;
-        Node<E> next;
+        protected E elem;
+        protected Node<E> next;
 
         public Node(E elem, Node<E> next) {
             this.elem = elem;
@@ -135,6 +132,10 @@ public class SinglyLinkedList<E> implements List<E> {
         public E getElem() {return elem;}
 
         public Node<E> getNext() {return next;}
+
+        public void setNext(Node<E> newNext) {
+            next = newNext;
+        }
 
         public E setElem(E newElem) {
             E old = elem;
